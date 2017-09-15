@@ -297,7 +297,10 @@ migrate_simple_value(mrb_state *mrb, mrb_value v, mrb_state *mrb2) {
       a1 = mrb_ary_ptr(nv);
       for (i=0; i<RARRAY_LEN(v); i++) {
         int ai = mrb_gc_arena_save(mrb2);
-        a1->as.heap.ptr[i] = migrate_simple_value(mrb, a0->as.heap.ptr[i], mrb2);
+        if(a0->as.heap.ptr[i] == 0)
+          a1->as.heap.ptr[i] = migrate_simple_value(mrb,a0->as.embed[i],mrb2);
+        else
+          a1->as.heap.ptr[i] = migrate_simple_value(mrb, a0->as.heap.ptr[i], mrb2);
         a1->as.heap.len++;
         mrb_gc_arena_restore(mrb2, ai);
       }
